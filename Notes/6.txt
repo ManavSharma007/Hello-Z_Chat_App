@@ -1,0 +1,83 @@
+
+Hi Team,
+
+For the OSD Issue, Please see below the Observations: -
+
+Issue is reproducible on HAL 1.4.22 
+Issue not reproducible on HAL 1.4.20
+
+Below is the call sequence when issue is getting reproduced :-
+
+LCN:113 Tune request
+E016-0   to application
+PLAYING CA Talking Context : null
+OSD-4 starts playing(with blue key)
+Locator changed to 0 (as CA talking is expired)
+E016-0   to application
+PLAYING CA Talking Context : played
+RF Signal removed(DMD_JAVA_EVT_LOST)
+RF Signal re connected(DMD_JAVA_EVT_RECIEVED)
+PLAYING CA Talking Context : null
+OSD-4 starts playing again (without blue key)
+E016-0   to application
+
+From application side whe need to know, how is the E016 error code is impacting the application? is there any any changes done in application side when it recieves E016 error?
+How are we deciding when should the application play the OSD-4 audio and show the Blue key? 
+
+Based, on this Data, I suggest we should look it from application side in order to futher debug this issue and try to resolve it.
+
+
+
+[2024-10-21 16:43:59.404] Core HAL version: 1.4.22
+[2024-10-21 16:43:59.404] Non-Core HAL version: 1.4.22
+[2024-10-21 16:44:17.822] 00000:18.332 [APPLICATION_CORE-Thread-0] DEBUG - imw.serviceselection.servicecontext.calls - select: service=IMWChannel['Ch.100', dvb://d2.28.faa, key=0xa8b, serviceKey=0x968, parent bouquet key=0xeaf, LCN= 100, original LCN= 100, ordering=0, visible=true, serviceFlags=7, genres={1, 17, 49, 64, 124}, type=Enum[name=DIGITAL_TV, DVB value=1, JavaTV value=DIGITAL_TV, persistent storage value=1], persistent locked=false, encrypted=true, authorization=Not authorized], requestData={TunedBy=ZAP, locator=dvb://d2.28.faa}
+[2024-10-21 16:44:32.486] 00000:32.805 [APPLICATION_CORE-Thread-0] DEBUG - imw.serviceselection.servicecontext.calls - select: service=IMWChannel['Tata Play Romance', dvb://d2.21.ce5, key=0x6d2, serviceKey=0x2fa, parent bouquet key=0xeaf, LCN= 113, original LCN= 113, ordering=24582, visible=true, shortName='IM^TA^CMWS^P60.00*^M080-6199 9933', serviceProviderName='Tata Sky Romance @ Rs 60 pm', serviceFlags=7, genres={1, 17, 48, 64, 124}, type=Enum[name=DIGITAL_TV, DVB value=1, JavaTV value=DIGITAL_TV, persistent storage value=1], persistent locked=false, encrypted=true, authorization=Not authorized], requestData={TunedBy=DCA, locator=dvb://d2.21.ce5}
+[2024-10-21 16:44:37.924] [CCA DEBUG] ../../../../../core/pagesearch.c(1692) : Send Page 0 Status E016-0   to application.
+[2024-10-21 16:44:39.612] 00000:39.755 [APPLICATION_CORE-Thread-0] DEBUG - app.core.ca.trai - PLAYING CA Talking Context : null
+[2024-10-21 16:44:40.941] 00000:41.345 [APPLICATION_CORE-Thread-0] DEBUG - imw.serviceselection.servicecontext.calls - select: service=IMWChannel['OSD4 Audio', dvb://d2.21.d21, key=0xc7b, serviceKey=0xbdb, parent bouquet key=null, LCN= -1, original LCN= -1, visible=false, serviceFlags=7, genres={64}, type=Enum[name=DIGITAL_RADIO, DVB value=2, JavaTV value=DIGITAL_RADIO, persistent storage value=2], persistent locked=false, encrypted=true, authorization=Not authorized], requestData=ca-talking-select sParams=com.idway.sdk.tv.SelectParameters@62c08de
+[2024-10-21 16:45:43.994] 00001:44.550 [APPLICATION_CORE-Thread-0] DEBUG - imw.serviceselection.servicecontext.calls - select: locators={[0]:dvb://d2.21.ce5}, requestData=ca-talking-expired
+[2024-10-21 16:45:46.373] [CCA DEBUG] ../../../../../core/pagesearch.c(1692) : Send Page 0 Status E016-0   to application.
+[2024-10-21 16:45:48.074] 00001:48.470 [APPLICATION_CORE-Thread-0] DEBUG - app.core.ca.trai - PLAYING CA Talking Context : played
+[2024-10-21 16:46:29.105] 00002:29.789 [3c1ff490] WARN  demod/src/DMDtuner.c:1907 - DMD Java Notify tuner 0, DMD_JAVA_EVT_LOST(0x3)
+[2024-10-21 16:46:59.759] 00003:00.422 [3c1ff490] WARN  demod/src/DMDtuner.c:1907 - DMD Java Notify tuner 0, DMD_JAVA_EVT_RETRIEVED(0x4)
+[2024-10-21 16:47:00.876] 00003:01.290 [IMW-ServiceSelection] ERROR - imw.serviceselection.statemachine - message was not handled: sender:IMWCoreMessagingClient[IMW-LivePlayer=5], type:IMWCoreMessageType[livePlayer.pmtChange=393221/0x60005], isCancellationMessage:false, isCanceled:false, data:MediaSessionData[tsPipe=TSPIPE [0 :  ON] : NI[0] > Demux[0], usage=LIVE, used by=ArrayList[IMW-ServiceSelection, IMW-TableFilter-NI0, IMW-Grabber], locator=dvb://d2.21.ce5, playbackLocator=null, filePath=null, pmt: PMT[ts=dvb://d2.21, pid=0x1b62, tid=0x2, tidext=0xce5, ver=17, crc=0xaa9c3b1a]], track pids: [0x1b63,0x1b64,0x1e72], metadata=null, pvrHandle=0, source=1, caSessionId=0, isVod=false], senderAppData= null, receiverAppData= LivePlayerCmd<4>, current state: com.idway.javatv.service.selection.ServiceSelectionEngine$StateListenToPATEvents@62bd912
+[2024-10-21 16:47:03.084] 00003:03.422 [APPLICATION_CORE-Thread-0] DEBUG - app.core.ca.trai - PLAYING CA Talking Context : null
+[2024-10-21 16:47:03.762] 00003:04.138 [APPLICATION_CORE-Thread-0] DEBUG - imw.serviceselection.servicecontext.calls - select: service=IMWChannel['OSD4 Audio', dvb://d2.21.d21, key=0xc7b, serviceKey=0xbdb, parent bouquet key=null, LCN= -1, original LCN= -1, visible=false, serviceFlags=7, genres={64}, type=Enum[name=DIGITAL_RADIO, DVB value=2, JavaTV value=DIGITAL_RADIO, persistent storage value=2], persistent locked=false, encrypted=true, authorization=Not authorized], requestData=ca-talking-select sParams=com.idway.sdk.tv.SelectParameters@6255ea5
+[2024-10-21 16:47:04.099] [CCA DEBUG] ../../../../../core/pagesearch.c(1692) : Send Page 0 Status E016-0   to application.
+
+
+///////////////////////////////////////////////////
+After the tune request, we observe that an E016 error sets the CA Talking state to "null" (PLAYING CA Talking Context : null), and OSD-4 plays with the blue key. 
+Following CA Talking expiration, E016 reappears, and CA Talking shifts to "played". After an RF reconnect, the CA Talking state returns to "null", but OSD-4 plays without the blue key, indicating a possible discrepancy.
+
+
+
+////////////////////////////////////////////////////////////
+
+Hi Team,
+
+Please find below our observations regarding the OSD issue:
+
+Reproducibility:
+
+The issue is reproducible on HAL version 1.4.22.
+The issue is not reproducible on HAL version 1.4.20.
+Call Sequence when Issue is Reproduced:
+
+LCN:113 Tune request
+E016-0 sent to application
+PLAYING CA Talking Context: null
+OSD-4 begins playing (with blue key)
+Locator changes to 0 (as CA talking expires)
+E016-0 sent to application
+PLAYING CA Talking Context: played
+RF Signal removed (DMD_JAVA_EVT_LOST)
+RF Signal reconnected (DMD_JAVA_EVT_RECEIVED)
+PLAYING CA Talking Context: null
+OSD-4 starts again (without blue key)
+E016-0 sent to application
+We would like to understand the impact of the E016 error code on the application. Specifically:
+
+Has there been any recent change in the application's response to receiving an E016 error?
+What determines when the application plays the OSD-4 audio and displays the blue key?
+Based on the data provided, we recommend examining the application side further to investigate how this error might be influencing the OSD display, with the goal of identifying the root cause and implementing a resolution
